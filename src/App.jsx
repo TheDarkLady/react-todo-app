@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './App.css'
 
 function App() {
-
+  const [isCompleteScreen, setCompleteScreen] = useState(false)
   return (
     <>
     <div className='App'>
@@ -22,8 +22,8 @@ function App() {
         </div>
       </div>
     <div className='btn-area'>
-      <button className='secondaryBtn'>Todo</button>
-      <button className='secondaryBtn'>Completed</button>
+      <button className="secondaryBtn">Todo</button>
+      <button className="secondaryBtn" >Completed</button>
     </div>
     <div className='todo-list-area'>
       <div className='todo-list-item'>
