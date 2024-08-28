@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import "./App.css";
 import { MdOutlineDelete } from "react-icons/md";
 import { BsCheckLg } from "react-icons/bs";
+import { FaEdit } from "react-icons/fa";
 
 function App() {
   const [isCompleteScreen, setCompleteScreen] = useState(false);
   const [allTodos, setAllTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState("");
+  const [newDescription, setNewDescription] = useState(""); // This will be used with ReactQuill
   const [completedTodo, setCompletedTodo] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
 
   function handleAddTodo() {
     if (newTitle.trim() === "" || newDescription.trim() === "") {
@@ -16,18 +20,34 @@ function App() {
       return;
     }
 
-    let newTodoItem = {
-      title: newTitle,
-      description: newDescription,
-    };
+    let updatedTodoArr = [...allTodos];
+
+    if (editIndex !== null) {
+      // Edit existing todo
+      updatedTodoArr[editIndex] = {
+        title: newTitle,
+        description: newDescription,
+      };
+      setEditIndex(null); // Reset edit index after editing
+    } else {
+      // Add new todo
+      let newTodoItem = {
+        title: newTitle,
+        description: newDescription,
+      };
+      updatedTodoArr.push(newTodoItem);
+    }
 
     setNewTitle("");
     setNewDescription("");
-
-    let updatedTodoArr = [...allTodos];
-    updatedTodoArr.push(newTodoItem);
     setAllTodos(updatedTodoArr);
     localStorage.setItem("todoList", JSON.stringify(updatedTodoArr));
+  }
+
+  function handleEdit(index) {
+    setEditIndex(index);
+    setNewTitle(allTodos[index].title);
+    setNewDescription(allTodos[index].description);
   }
 
   function handleDeleteTodo(index) {
@@ -35,6 +55,11 @@ function App() {
     reduceTodo.splice(index, 1);
     localStorage.setItem("todoList", JSON.stringify(reduceTodo));
     setAllTodos(reduceTodo);
+    if (index === editIndex) {
+      setEditIndex(null); // Reset edit index if the item being edited is deleted
+      setNewTitle("");
+      setNewDescription("");
+    }
   }
 
   function handleComplete(index) {
@@ -96,11 +121,9 @@ function App() {
             </div>
             <div className="todo-input-item">
               <label htmlFor="todo">Description</label>
-              <input
-                type="text"
+              <ReactQuill
                 value={newDescription}
-                onChange={(e) => setNewDescription(e.target.value)}
-                id="todoDesc"
+                onChange={setNewDescription}
                 placeholder="Add Description"
               />
             </div>
@@ -110,7 +133,7 @@ function App() {
                 className="primary-btn"
                 onClick={handleAddTodo}
               >
-                Add Todo
+                {editIndex !== null ? "Update Todo" : "Add Todo"}
               </button>
             </div>
           </div>
@@ -135,9 +158,17 @@ function App() {
                   <div className="todo-list-item" key={index}>
                     <div>
                       <h3>{item.title}</h3>
-                      <p>{item.description}</p>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: item.description,
+                        }}
+                      ></p>
                     </div>
                     <div>
+                      <FaEdit
+                        className="check-icon"
+                        onClick={() => handleEdit(index)}
+                      />
                       <MdOutlineDelete
                         className="icon"
                         onClick={() => handleDeleteTodo(index)}
@@ -158,7 +189,11 @@ function App() {
                   <div className="todo-list-item" key={index}>
                     <div>
                       <h3>{item.title}</h3>
-                      <p>{item.description}</p>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: item.description,
+                        }}
+                      ></p>
                       <p>
                         <small>Completed on: {item.completedOn}</small>
                       </p>
