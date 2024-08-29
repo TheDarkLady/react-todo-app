@@ -1,24 +1,21 @@
 import { useEffect, useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import "./App.css";
 import { MdOutlineDelete } from "react-icons/md";
 import { BsCheckLg } from "react-icons/bs";
-import { FaEdit } from "react-icons/fa";
 
 function App() {
   const [isCompleteScreen, setCompleteScreen] = useState(false);
   const [allTodos, setAllTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState(""); // This will be used with ReactQuill
+  const [newDescription, setNewDescription] = useState("");
   const [completedTodo, setCompletedTodo] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
 
   function handleAddTodo() {
     if (newTitle.trim() === "" || newDescription.trim() === "") {
       alert("Title and Description cannot be empty");
       return;
     }
+<<<<<<< HEAD
   
     const newTodo = {
       title: newTitle,
@@ -59,16 +56,26 @@ function App() {
           setNewDescription("");
         });
     }
+=======
+
+    let newTodoItem = {
+      title: newTitle,
+      description: newDescription,
+    };
+
+    setNewTitle("");
+    setNewDescription("");
+
+    let updatedTodoArr = [...allTodos];
+    updatedTodoArr.push(newTodoItem);
+    setAllTodos(updatedTodoArr);
+    localStorage.setItem("todoList", JSON.stringify(updatedTodoArr));
+>>>>>>> parent of fb7d375 (responsive is done)
   }
   
 
-  function handleEdit(index) {
-    setEditIndex(index);
-    setNewTitle(allTodos[index].title);
-    setNewDescription(allTodos[index].description);
-  }
-
   function handleDeleteTodo(index) {
+<<<<<<< HEAD
     fetch(`http://localhost:5000/todos/${allTodos[index].id}`, {
       method: "DELETE",
     }).then(() => {
@@ -79,6 +86,12 @@ function App() {
         setNewDescription("");
       }
     });
+=======
+    const reduceTodo = [...allTodos];
+    reduceTodo.splice(index, 1);
+    localStorage.setItem("todoList", JSON.stringify(reduceTodo));
+    setAllTodos(reduceTodo);
+>>>>>>> parent of fb7d375 (responsive is done)
   }
   
 
@@ -134,9 +147,11 @@ function App() {
             </div>
             <div className="todo-input-item">
               <label htmlFor="todo">Description</label>
-              <ReactQuill
+              <input
+                type="text"
                 value={newDescription}
-                onChange={setNewDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                id="todoDesc"
                 placeholder="Add Description"
               />
             </div>
@@ -146,7 +161,7 @@ function App() {
                 className="primary-btn"
                 onClick={handleAddTodo}
               >
-                {editIndex !== null ? "Update Todo" : "Add Todo"}
+                Add Todo
               </button>
             </div>
           </div>
@@ -171,17 +186,9 @@ function App() {
                   <div className="todo-list-item" key={index}>
                     <div>
                       <h3>{item.title}</h3>
-                      <p
-                        dangerouslySetInnerHTML={{
-                          __html: item.description,
-                        }}
-                      ></p>
+                      <p>{item.description}</p>
                     </div>
                     <div>
-                      <FaEdit
-                        className="check-icon"
-                        onClick={() => handleEdit(index)}
-                      />
                       <MdOutlineDelete
                         className="icon"
                         onClick={() => handleDeleteTodo(index)}
@@ -202,11 +209,7 @@ function App() {
                   <div className="todo-list-item" key={index}>
                     <div>
                       <h3>{item.title}</h3>
-                      <p
-                        dangerouslySetInnerHTML={{
-                          __html: item.description,
-                        }}
-                      ></p>
+                      <p>{item.description}</p>
                       <p>
                         <small>Completed on: {item.completedOn}</small>
                       </p>
