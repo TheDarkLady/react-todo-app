@@ -1,0 +1,17 @@
+{
+  "todos": [
+    {
+      "id": "12c0",
+      "title": "lakshmi ",
+      "description": "<ol><li>chaithanya</li><li>sruthi</li><li>sharma</li></ol>"
+    }
+  ],
+  "completedTodos": [
+    {
+      "id": "b5ac",
+      "title": "hari ",
+      "description": "<p>kumar</p>",
+      "completedOn": "8/29/2024 10:02:18 PM"
+    }
+  ]
+}
