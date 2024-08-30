@@ -1,134 +1,108 @@
 import { useEffect, useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import "./App.css";
 import { MdOutlineDelete } from "react-icons/md";
 import { BsCheckLg } from "react-icons/bs";
+import { FaEdit } from "react-icons/fa";
 
 function App() {
   const [isCompleteScreen, setCompleteScreen] = useState(false);
   const [allTodos, setAllTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState("");
+  const [newDescription, setNewDescription] = useState(""); // This will be used with ReactQuill
   const [completedTodo, setCompletedTodo] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
 
   function handleAddTodo() {
     if (newTitle.trim() === "" || newDescription.trim() === "") {
       alert("Title and Description cannot be empty");
       return;
     }
-<<<<<<< HEAD
-  
-    const newTodo = {
-      title: newTitle,
-      description: newDescription,
-    };
-  
+
+    let updatedTodoArr = [...allTodos];
+
     if (editIndex !== null) {
-      // Update existing todo
-      fetch(`http://localhost:5000/todos/${allTodos[editIndex].id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newTodo),
-      }).then(() => {
-        setAllTodos((prevTodos) => {
-          const updatedTodos = [...prevTodos];
-          updatedTodos[editIndex] = { ...updatedTodos[editIndex], ...newTodo };
-          return updatedTodos;
-        });
-        setEditIndex(null);
-        setNewTitle("");
-        setNewDescription("");
-      });
+      // Edit existing todo
+      updatedTodoArr[editIndex] = {
+        title: newTitle,
+        description: newDescription,
+      };
+      setEditIndex(null); // Reset edit index after editing
     } else {
       // Add new todo
-      fetch("http://localhost:5000/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newTodo),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setAllTodos((prevTodos) => [...prevTodos, data]);
-          setNewTitle("");
-          setNewDescription("");
-        });
+      let newTodoItem = {
+        title: newTitle,
+        description: newDescription,
+      };
+      updatedTodoArr.push(newTodoItem);
     }
-=======
-
-    let newTodoItem = {
-      title: newTitle,
-      description: newDescription,
-    };
 
     setNewTitle("");
     setNewDescription("");
-
-    let updatedTodoArr = [...allTodos];
-    updatedTodoArr.push(newTodoItem);
     setAllTodos(updatedTodoArr);
     localStorage.setItem("todoList", JSON.stringify(updatedTodoArr));
->>>>>>> parent of fb7d375 (responsive is done)
   }
-  
+
+  function handleEdit(index) {
+    setEditIndex(index);
+    setNewTitle(allTodos[index].title);
+    setNewDescription(allTodos[index].description);
+  }
 
   function handleDeleteTodo(index) {
-<<<<<<< HEAD
-    fetch(`http://localhost:5000/todos/${allTodos[index].id}`, {
-      method: "DELETE",
-    }).then(() => {
-      setAllTodos((prevTodos) => prevTodos.filter((_, i) => i !== index));
-      if (index === editIndex) {
-        setEditIndex(null);
-        setNewTitle("");
-        setNewDescription("");
-      }
-    });
-=======
     const reduceTodo = [...allTodos];
     reduceTodo.splice(index, 1);
     localStorage.setItem("todoList", JSON.stringify(reduceTodo));
     setAllTodos(reduceTodo);
->>>>>>> parent of fb7d375 (responsive is done)
+    if (index === editIndex) {
+      setEditIndex(null); // Reset edit index if the item being edited is deleted
+      setNewTitle("");
+      setNewDescription("");
+    }
   }
-  
 
   function handleComplete(index) {
     let now = new Date();
-    let completedOn = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-  
-    const completedItem = {
+    let dd = String(now.getDate()).padStart(2, "0");
+    let mm = String(now.getMonth() + 1).padStart(2, "0");
+    let yyyy = now.getFullYear();
+    let h = String(now.getHours()).padStart(2, "0");
+    let m = String(now.getMinutes()).padStart(2, "0");
+    let s = String(now.getSeconds()).padStart(2, "0");
+
+    let completedOn = `${dd}/${mm}/${yyyy} ${h}:${m}:${s}`;
+
+    let filteredItem = {
       ...allTodos[index],
-      completedOn,
+      completedOn: completedOn,
     };
-  
-    fetch("http://localhost:5000/completedTodos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(completedItem),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setCompletedTodo((prevTodos) => [...prevTodos, data]);
-        handleDeleteTodo(index);
-      });
+
+    let updatedCompletedArr = [...completedTodo];
+    updatedCompletedArr.push(filteredItem);
+    setCompletedTodo(updatedCompletedArr);
+    localStorage.setItem("completedTodo", JSON.stringify(updatedCompletedArr));
+    handleDeleteTodo(index);
   }
-  
+
+  function handleCompleteDeleteTodo(index) {
+    let updatedCompletedArr = [...completedTodo];
+    updatedCompletedArr.splice(index, 1);
+    localStorage.setItem("completedTodo", JSON.stringify(updatedCompletedArr));
+    setCompletedTodo(updatedCompletedArr);
+  }
 
   useEffect(() => {
-    fetch("http://localhost:5000/todos")
-      .then((response) => response.json())
-      .then((data) => setAllTodos(data));
-  
-    fetch("http://localhost:5000/completedTodos")
-      .then((response) => response.json())
-      .then((data) => setCompletedTodo(data));
+    let savedTodo = JSON.parse(localStorage.getItem("todoList"));
+    let saveCompleteTodo = JSON.parse(localStorage.getItem("completedTodo"));
+    if (savedTodo) {
+      setAllTodos(savedTodo);
+    }
+    if (saveCompleteTodo) {
+      setCompletedTodo(saveCompleteTodo);
+    }
   }, []);
-  
+
   return (
     <>
       <div className="App">
@@ -147,11 +121,9 @@ function App() {
             </div>
             <div className="todo-input-item">
               <label htmlFor="todo">Description</label>
-              <input
-                type="text"
+              <ReactQuill
                 value={newDescription}
-                onChange={(e) => setNewDescription(e.target.value)}
-                id="todoDesc"
+                onChange={setNewDescription}
                 placeholder="Add Description"
               />
             </div>
@@ -161,7 +133,7 @@ function App() {
                 className="primary-btn"
                 onClick={handleAddTodo}
               >
-                Add Todo
+                {editIndex !== null ? "Update Todo" : "Add Todo"}
               </button>
             </div>
           </div>
@@ -186,9 +158,17 @@ function App() {
                   <div className="todo-list-item" key={index}>
                     <div>
                       <h3>{item.title}</h3>
-                      <p>{item.description}</p>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: item.description,
+                        }}
+                      ></p>
                     </div>
                     <div>
+                      <FaEdit
+                        className="check-icon"
+                        onClick={() => handleEdit(index)}
+                      />
                       <MdOutlineDelete
                         className="icon"
                         onClick={() => handleDeleteTodo(index)}
@@ -209,7 +189,11 @@ function App() {
                   <div className="todo-list-item" key={index}>
                     <div>
                       <h3>{item.title}</h3>
-                      <p>{item.description}</p>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: item.description,
+                        }}
+                      ></p>
                       <p>
                         <small>Completed on: {item.completedOn}</small>
                       </p>
