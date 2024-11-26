@@ -5,6 +5,8 @@ import "./App.css";
 import { MdOutlineDelete } from "react-icons/md";
 import { BsCheckLg } from "react-icons/bs";
 import { FaEdit } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [isCompleteScreen, setCompleteScreen] = useState(false);
@@ -16,7 +18,7 @@ function App() {
 
   function handleAddTodo() {
     if (newTitle.trim() === "" || newDescription.trim() === "") {
-      alert("Title and Description cannot be empty");
+      toast.warning("Title and Description cannot be empty");
       return;
     }
 
@@ -135,6 +137,20 @@ function App() {
               >
                 {editIndex !== null ? "Update Todo" : "Add Todo"}
               </button>
+              <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+              transition: Bounce
+              />
+{/* Same as */}
             </div>
           </div>
           <div className="btn-area">
