@@ -31,12 +31,14 @@ function App() {
         description: newDescription,
       };
       setEditIndex(null); // Reset edit index after editing
+      toast.success("Todo Updated Successfully")
     } else {
       // Add new todo
       let newTodoItem = {
         title: newTitle,
         description: newDescription,
       };
+      toast.success("New Todo Added Successfully")
       updatedTodoArr.push(newTodoItem);
     }
 
@@ -62,6 +64,7 @@ function App() {
       setNewTitle("");
       setNewDescription("");
     }
+    toast.error("Todo Deleted Successfully")
   }
 
   function handleComplete(index) {
@@ -84,7 +87,13 @@ function App() {
     updatedCompletedArr.push(filteredItem);
     setCompletedTodo(updatedCompletedArr);
     localStorage.setItem("completedTodo", JSON.stringify(updatedCompletedArr));
-    handleDeleteTodo(index);
+
+    let updatedTodos = [...allTodos];
+    updatedTodos.splice(index, 1);
+    setAllTodos(updatedTodos);
+    localStorage.setItem("todoList", JSON.stringify(updatedTodos));
+    toast.success("Your Task is completed Successfully")
+    // handleDeleteTodo(index);
   }
 
   function handleCompleteDeleteTodo(index) {
@@ -92,6 +101,8 @@ function App() {
     updatedCompletedArr.splice(index, 1);
     localStorage.setItem("completedTodo", JSON.stringify(updatedCompletedArr));
     setCompletedTodo(updatedCompletedArr);
+    toast.error("Todo Deleted Successfully")
+
   }
 
   useEffect(() => {
@@ -138,19 +149,19 @@ function App() {
                 {editIndex !== null ? "Update Todo" : "Add Todo"}
               </button>
               <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="dark"
-              transition: Bounce
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+                transition:Bounce
               />
-{/* Same as */}
+              {/* Same as */}
             </div>
           </div>
           <div className="btn-area">
