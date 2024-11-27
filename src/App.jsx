@@ -131,13 +131,21 @@ function App() {
       const now = new Date();
       allTodos.forEach((todo, index) => {
         const [year, month, day] = todo.reminderDate.split("-");
-        const [hours, minutes] = todo.reminderTime.split(":");
+        const [hours, minutes, seconds] = todo.reminderTime.split(":");
         const reminderDateTime = new Date(year, month - 1, day, hours, minutes);
 
         if (reminderDateTime <= now) {
           toast.info(`Reminder: ${todo.title}`);
           // Optional: Remove the reminder from the list
           const updatedTodos = [...allTodos];
+
+          // adding alarm 
+          const alarmSound = new Audio('/react-todo-app/Alarm-Clock-Short-chosic.com_.mp3')
+          alarmSound.load();
+          alarmSound.play().catch((err)=>{
+            console.error("Audio playBack failed", err)
+          })
+
           updatedTodos.splice(index, 1);
           setAllTodos(updatedTodos);
           localStorage.setItem("todoList", JSON.stringify(updatedTodos));
@@ -188,6 +196,7 @@ function App() {
               <input
                 type="time"
                 id="reminderTime"
+                step="1"
                 value={reminderTime}
                 onChange={(e) => setReminderTime(e.target.value)}
               />
@@ -245,10 +254,10 @@ function App() {
                           __html: item.description,
                         }}
                       ></p>
-                      <small style={{display: (item.reminderDate === "" && item.reminderDate === "" )? "none" : "block"}}>Reminder :{item.reminderDate} at {item.reminderTime}</small>
+                      <small style={{display: (item.reminderDate === "" && item.reminderTime === "" )? "none" : "block"}}>Reminder :{item.reminderDate} at {item.reminderTime}</small>
                     </div>
                     <div style={{display:"flex", flexDirection:"column", gap:"10px" }}>
-                      <div style={{display: (item.reminderDate === "" && item.reminderDate === "" )? "none" : "flex", justifyContent:"flex-end"  }}>
+                      <div style={{display: (item.reminderDate === "" && item.reminderTime === "" )? "none" : "flex", justifyContent:"flex-end"  }}>
                         <IoIosAlarm  />
                       </div>
                       <div>
