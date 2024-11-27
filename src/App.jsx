@@ -5,6 +5,7 @@ import "./App.css";
 import { MdOutlineDelete } from "react-icons/md";
 import { BsCheckLg } from "react-icons/bs";
 import { FaEdit } from "react-icons/fa";
+import { IoIosAlarm } from "react-icons/io";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -15,6 +16,8 @@ function App() {
   const [newDescription, setNewDescription] = useState(""); // This will be used with ReactQuill
   const [completedTodo, setCompletedTodo] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const [reminderDate, setReminderDate] = useState("");
+  const [reminderTime, setReminderTime] = useState("");
 
   function handleAddTodo() {
     if (newTitle.trim() === "" || newDescription.trim() === "") {
@@ -24,26 +27,29 @@ function App() {
 
     let updatedTodoArr = [...allTodos];
 
+    const newTodoItem = {
+      title: newTitle,
+      description: newDescription,
+      reminderDate,
+      reminderTime
+    };
+
     if (editIndex !== null) {
       // Edit existing todo
-      updatedTodoArr[editIndex] = {
-        title: newTitle,
-        description: newDescription,
-      };
+      updatedTodoArr[editIndex] = newTodoItem;
       setEditIndex(null); // Reset edit index after editing
       toast.success("Todo Updated Successfully")
     } else {
       // Add new todo
-      let newTodoItem = {
-        title: newTitle,
-        description: newDescription,
-      };
+      updatedTodoArr.push(newTodoItem)
       toast.success("New Todo Added Successfully")
-      updatedTodoArr.push(newTodoItem);
+      // updatedTodoArr.push(newTodoItem);
     }
 
     setNewTitle("");
     setNewDescription("");
+    setReminderDate("");
+    setReminderTime("")
     setAllTodos(updatedTodoArr);
     localStorage.setItem("todoList", JSON.stringify(updatedTodoArr));
   }
@@ -52,6 +58,8 @@ function App() {
     setEditIndex(index);
     setNewTitle(allTodos[index].title);
     setNewDescription(allTodos[index].description);
+    setReminderDate(allTodos[index].reminderDate);
+    setReminderTime(allTodos[index].reminderTime)
   }
 
   function handleDeleteTodo(index) {
@@ -63,6 +71,8 @@ function App() {
       setEditIndex(null); // Reset edit index if the item being edited is deleted
       setNewTitle("");
       setNewDescription("");
+      setReminderDate("")
+      setReminderTime("")
     }
     toast.error("Todo Deleted Successfully")
   }
@@ -116,6 +126,29 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      allTodos.forEach((todo, index) => {
+        const [year, month, day] = todo.reminderDate.split("-");
+        const [hours, minutes] = todo.reminderTime.split(":");
+        const reminderDateTime = new Date(year, month - 1, day, hours, minutes);
+
+        if (reminderDateTime <= now) {
+          toast.info(`Reminder: ${todo.title}`);
+          // Optional: Remove the reminder from the list
+          const updatedTodos = [...allTodos];
+          updatedTodos.splice(index, 1);
+          setAllTodos(updatedTodos);
+          localStorage.setItem("todoList", JSON.stringify(updatedTodos));
+        }
+      });
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [allTodos]);
+
+
   return (
     <>
       <div className="App">
@@ -140,6 +173,26 @@ function App() {
                 placeholder="Add Description"
               />
             </div>
+
+            <div className="todo-input-item">
+              <label htmlFor="reminderDate">Set Reminder Date</label>
+              <input
+                type="date"
+                id="reminderDate"
+                value={reminderDate}
+                onChange={(e) => setReminderDate(e.target.value)}
+              />
+            </div>
+            <div className="todo-input-item">
+              <label htmlFor="reminderTime">Set Reminder Time</label>
+              <input
+                type="time"
+                id="reminderTime"
+                value={reminderTime}
+                onChange={(e) => setReminderTime(e.target.value)}
+              />
+            </div>
+
             <div className="todo-input-item">
               <button
                 type="button"
@@ -152,7 +205,7 @@ function App() {
                 position="top-center"
                 autoClose={5000}
                 hideProgressBar={false}
-                newestOnTop={false}
+                newestOnTop={true}
                 closeOnClick
                 rtl={false}
                 pauseOnFocusLoss
@@ -181,6 +234,8 @@ function App() {
           <div className="todo-list-area">
             {!isCompleteScreen &&
               allTodos.map((item, index) => {
+                console.log("each Item", item);
+
                 return (
                   <div className="todo-list-item" key={index}>
                     <div>
@@ -190,22 +245,28 @@ function App() {
                           __html: item.description,
                         }}
                       ></p>
+                      <small style={{display: (item.reminderDate === "" && item.reminderDate === "" )? "none" : "block"}}>Reminder :{item.reminderDate} at {item.reminderTime}</small>
                     </div>
-                    <div>
-                      <FaEdit
-                        className="check-icon"
-                        onClick={() => handleEdit(index)}
-                      />
-                      <MdOutlineDelete
-                        className="icon"
-                        onClick={() => handleDeleteTodo(index)}
-                      />
-                      <BsCheckLg
-                        className="check-icon"
-                        onClick={() => {
-                          handleComplete(index);
-                        }}
-                      />
+                    <div style={{display:"flex", flexDirection:"column", gap:"10px" }}>
+                      <div style={{display: (item.reminderDate === "" && item.reminderDate === "" )? "none" : "flex", justifyContent:"flex-end"  }}>
+                        <IoIosAlarm  />
+                      </div>
+                      <div>
+                        <FaEdit
+                          className="check-icon"
+                          onClick={() => handleEdit(index)}
+                        />
+                        <MdOutlineDelete
+                          className="icon"
+                          onClick={() => handleDeleteTodo(index)}
+                        />
+                        <BsCheckLg
+                          className="check-icon"
+                          onClick={() => {
+                            handleComplete(index);
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 );
