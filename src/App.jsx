@@ -162,6 +162,7 @@ function App() {
       <div className="App">
         <h1>My Todos </h1>
         <div className="todo-wrapper">
+          <div style={{borderBottom:"1px solid gray"}}>
           <div className="todo-input">
             <div className="todo-input-item">
               <label htmlFor="todo">Title</label>
@@ -181,7 +182,8 @@ function App() {
                 placeholder="Add Description"
               />
             </div>
-
+            </div>
+            <div className="todo-input">
             <div className="todo-input-item">
               <label htmlFor="reminderDate">Set Reminder Date</label>
               <input
@@ -201,8 +203,8 @@ function App() {
                 onChange={(e) => setReminderTime(e.target.value)}
               />
             </div>
-
-            <div className="todo-input-item">
+            </div> 
+            <div className="todo-input-item" style={{marginBottom:"10px"}}>
               <button
                 type="button"
                 className="primary-btn"
@@ -226,7 +228,7 @@ function App() {
               {/* Same as */}
             </div>
           </div>
-          <div className="btn-area">
+          <div className="btn-area" style={{margin:"20px 0px"}}>
             <button
               className={`secondaryBtn ${!isCompleteScreen && "active"}`}
               onClick={() => setCompleteScreen(false)}
