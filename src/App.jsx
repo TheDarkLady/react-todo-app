@@ -18,6 +18,7 @@ function App() {
   const [editIndex, setEditIndex] = useState(null);
   const [reminderDate, setReminderDate] = useState("");
   const [reminderTime, setReminderTime] = useState("");
+  const alarmSound = new Audio('/react-todo-app/Alarm-Clock-Short-chosic.com_.mp3')
 
   function handleAddTodo() {
     if (newTitle.trim() === "" || newDescription.trim() === "") {
@@ -136,15 +137,22 @@ function App() {
 
         if (reminderDateTime <= now) {
           toast.info(`Reminder: ${todo.title}`);
+
+          try{
+            alarmSound.play();
+          }
+          catch(error){
+            console.error("Audio playBack failed", err)
+          }
           // Optional: Remove the reminder from the list
           const updatedTodos = [...allTodos];
 
           // adding alarm 
-          const alarmSound = new Audio('/react-todo-app/Alarm-Clock-Short-chosic.com_.mp3')
-          alarmSound.load();
-          alarmSound.play().catch((err)=>{
-            console.error("Audio playBack failed", err)
-          })
+          
+          // alarmSound.load();
+          // alarmSound.play().catch((err)=>{
+          //   console.error("Audio playBack failed", err)
+          // })
 
           updatedTodos.splice(index, 1);
           setAllTodos(updatedTodos);
