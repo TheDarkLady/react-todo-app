@@ -168,7 +168,7 @@ function Remindify() {
   return (
     <>
       <div className="App">
-        <h1>My Reminders </h1>
+        <h1>Remindify</h1>
         <div className="todo-wrapper">
           <div style={{borderBottom:"1px solid gray"}}>
           <div className="todo-input">
