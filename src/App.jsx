@@ -8,12 +8,9 @@ function App() {
 
   return (
     <>
-
-      <Routes>
-        <Route path="/" element={<Remindify />}>
-
-        </Route>
-      </Routes>
+        <Routes>
+          <Route path="/" element={<Remindify />} />
+        </Routes>
     </>
   );
 }
