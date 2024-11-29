@@ -13,30 +13,30 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 const manifestForPlugin = {
   registerType: 'prompt',
-  includeAssests: ['logo.jpeg'],
+  includeAssests: ['logo-180x180.jpg', 'logo-192x192.jpg', 'logo-512x512.jpg'],
   manifest: {
     name: "Remindify",
     short_name: "Remindify",
     description: "Remindify is designed to help you manage your tasks, allowing you to stay focused on productivity without the hassle of tracking these tasks.",
     icons: [{
-      src: '/logo.jpeg',
+      src: '/logo-192x192.jpg',
       sizes: '192x192',
       type: 'image/png',
       purpose: 'favicon'
     },
-    {src: '/logo.jpeg',
+    {src: '/logo-512x512.jpg',
       sizes: '512x512',
       type: 'image/png',
       purpose: 'favicon'
     },
     {
-      src: '/logo.jpeg',
+      src: '/logo-180x180.jpg',
       sizes: '180x180',
       type: 'image/png',
       purpose: 'apple touch icon',
     },
     {
-      src: '/logo.jpeg',
+      src: '/logo-512x512.jpg',
       sizes: '512x512',
       type: 'image/png',
       purpose: 'any maskable',

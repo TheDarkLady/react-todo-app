@@ -168,7 +168,7 @@ function App() {
   return (
     <>
       <div className="App">
-        <h1>My Todos </h1>
+        <h1>My Reminders </h1>
         <div className="todo-wrapper">
           <div style={{borderBottom:"1px solid gray"}}>
           <div className="todo-input">
